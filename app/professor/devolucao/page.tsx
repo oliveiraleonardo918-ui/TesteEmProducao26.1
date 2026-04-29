@@ -1,18 +1,27 @@
 'use client'
 
+import Link from 'next/link'
 import Image from 'next/image'
 import {
-  LayoutDashboard,
-  Package,
   ArrowRightLeft,
-  Undo2,
-  BarChart,
-  Settings,
   Bell,
   Search,
 } from 'lucide-react'
 
 export default function DevolucoesPage() {
+
+  // ✅ FORMATO: dd/mm/aaaa hh:mm
+  const formatDate = (date = new Date()) => {
+    const d = String(date.getDate()).padStart(2, '0')
+    const m = String(date.getMonth() + 1).padStart(2, '0')
+    const y = date.getFullYear()
+
+    const h = String(date.getHours()).padStart(2, '0')
+    const min = String(date.getMinutes()).padStart(2, '0')
+
+    return `${d}/${m}/${y} ${h}:${min}`
+  }
+
   return (
     <div className="min-h-screen flex bg-gray-100 text-gray-800">
 
@@ -27,17 +36,27 @@ export default function DevolucoesPage() {
           </div>
 
           <nav className="px-3 space-y-1 text-sm">
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
-              <LayoutDashboard size={16}/> Dashboard
-            </div>
 
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
+            <Link
+              href="/professor/homeprofessor"
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
+            >
+              <ArrowRightLeft size={16}/> Dashboard
+            </Link>
+
+            <Link
+              href="/professor/emprestimoprofessor"
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
+            >
               <ArrowRightLeft size={16}/> Empréstimos
-            </div>
+            </Link>
 
-            <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border-l-4 border-blue-600 rounded-lg">
-              <Undo2 size={16}/> Devoluções
-            </div>
+            <Link
+              href="/professor/devolucao"
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
+            >
+              <ArrowRightLeft size={16}/> Devoluções
+            </Link>
 
           </nav>
         </div>
@@ -140,8 +159,8 @@ export default function DevolucoesPage() {
           {/* LINHAS */}
           {[
             {
-              nome: 'Chave Laboratório D88',    
-              data: '12 Set 2023',
+              nome: 'Chave Laboratório D88',
+              data: new Date('2026-04-12T10:30:00'),
               status: 'PERFEITO',
               cor: 'green',
               user: 'Ana Ferreira',
@@ -149,7 +168,7 @@ export default function DevolucoesPage() {
             },
             {
               nome: 'Projetor Sony 4K',
-              data: '08 Set 2023',
+              data: new Date('2026-04-08T09:15:00'),
               status: 'DESGASTE',
               cor: 'yellow',
               user: 'Carlos Mendes',
@@ -173,7 +192,10 @@ export default function DevolucoesPage() {
                 </span>
               </div>
 
-              <div className="text-sm">{item.data}</div>
+              {/* ✅ DATA FORMATADA FINAL */}
+              <div className="text-sm">
+                {formatDate(item.data)}
+              </div>
 
               <div>
                 <span className={`text-xs px-3 py-1 rounded-full font-medium

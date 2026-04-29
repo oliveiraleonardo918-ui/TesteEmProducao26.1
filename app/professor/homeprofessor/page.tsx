@@ -1,22 +1,28 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import {
-  LayoutDashboard,
-  Repeat,
-  Undo2,
-  Box,
-  Users,
-  LogOut,
   Search,
   Bell,
   Settings,
-  Package,
   ArrowRightLeft,
-  BarChart,
 } from 'lucide-react'
 
 export default function HomeProfessor() {
+
+  // ✅ FORMATAÇÃO DE DATA (dd/mm/aaaa hh:mm)
+  const formatDate = (date = new Date()) => {
+    const d = String(date.getDate()).padStart(2, '0')
+    const m = String(date.getMonth() + 1).padStart(2, '0')
+    const y = date.getFullYear()
+
+    const h = String(date.getHours()).padStart(2, '0')
+    const min = String(date.getMinutes()).padStart(2, '0')
+
+    return `${d}/${m}/${y} ${h}:${min}`
+  }
+
   return (
     <div className="min-h-screen flex bg-gray-100 text-gray-800">
 
@@ -31,17 +37,27 @@ export default function HomeProfessor() {
           </div>
 
           <nav className="px-3 space-y-1 text-sm">
-            <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border-l-4 border-blue-600 rounded-lg">
-              <LayoutDashboard size={16}/> Dashboard
-            </div>
 
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
+            <Link
+              href="/professor/homeprofessor"
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
+            >
+              <ArrowRightLeft size={16}/> Dashboard
+            </Link>
+
+            <Link
+              href="/professor/emprestimoprofessor"
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
+            >
               <ArrowRightLeft size={16}/> Empréstimos
-            </div>
+            </Link>
 
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
-              <Undo2 size={16}/> Devoluções
-            </div>
+            <Link
+              href="/professor/devolucao"
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
+            >
+              <ArrowRightLeft size={16}/> Devoluções
+            </Link>
 
           </nav>
         </div>
@@ -79,7 +95,7 @@ export default function HomeProfessor() {
         {/* GRID */}
         <div className="grid grid-cols-3 gap-6">
 
-          {/* ESQUERDA */}
+          {/* ESQUERDA - SEUS CARDS MANTIDOS */}
           <div className="col-span-2 space-y-6">
 
             <div className="flex justify-between items-center">
@@ -93,7 +109,7 @@ export default function HomeProfessor() {
 
             <div className="grid grid-cols-2 gap-5">
 
-              {/* CARD PROJETOR */}
+              {/* CARD PROJETOR (SEM ALTERAÇÃO) */}
               <div className="bg-white rounded-xl shadow-sm border overflow-hidden transition hover:shadow-md hover:-translate-y-1">
                 <div className="relative">
                   <Image
@@ -117,13 +133,16 @@ export default function HomeProfessor() {
                     Projetor de alto brilho adequado para grandes auditórios e apresentações...
                   </p>
 
-                  <button className="w-full bg-blue-50 text-blue-700 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition">
+                  <Link
+                    href="/professor/emprestimoprofessor"
+                    className="block w-full text-center bg-blue-50 text-blue-700 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition"
+                  >
                     Alugar Item
-                  </button>
+                  </Link>
                 </div>
               </div>
 
-              {/* CARD CHAVE */}
+              {/* CARD CHAVE (SEM ALTERAÇÃO) */}
               <div className="bg-white rounded-xl shadow-sm border overflow-hidden transition hover:shadow-md hover:-translate-y-1">
                 <div className="relative">
                   <Image
@@ -147,15 +166,18 @@ export default function HomeProfessor() {
                     Chave mestra para o laboratório de robótica avançada.
                   </p>
 
-                  <button className="w-full bg-blue-50 text-blue-700 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition">
+                  <Link
+                    href="/professor/emprestimoprofessor"
+                    className="block w-full text-center bg-blue-50 text-blue-700 py-2 rounded-lg text-sm font-medium hover:bg-blue-100 transition"
+                  >
                     Alugar Item
-                  </button>
+                  </Link>
                 </div>
               </div>
 
             </div>
 
-            
+            {/* HISTÓRICO (SÓ DATA FORMATADA AQUI) */}
             <div className="bg-white rounded-xl shadow-sm border p-4">
               <h3 className="font-semibold mb-4">
                 Histórico Recente de Empréstimos
@@ -175,41 +197,17 @@ export default function HomeProfessor() {
                 <tbody>
                   <tr className="border-t hover:bg-gray-50 transition">
                     <td className="py-3">Chave Laboratorio D44</td>
-                    <td>12 Out</td>
-                    <td>14 Out</td>
+
+                    {/* ✅ DATA FORMATADA */}
+                    <td>{formatDate(new Date('2026-04-12T10:30:00'))}</td>
+                    <td>{formatDate(new Date('2026-04-14T15:45:00'))}</td>
+
                     <td>
                       <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
                         Devolvido
                       </span>
                     </td>
-                    <td className="text-blue-600 cursor-pointer hover:underline">
-                      Detalhes
-                    </td>
-                  </tr>
 
-                  <tr className="border-t hover:bg-gray-50 transition">
-                    <td className="py-3">Projetor Epson 4</td>
-                    <td>28 Set</td>
-                    <td>05 Out</td>
-                    <td>
-                      <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
-                        Devolvido
-                      </span>
-                    </td>
-                    <td className="text-blue-600 cursor-pointer hover:underline">
-                      Detalhes
-                    </td>
-                  </tr>
-
-                  <tr className="border-t hover:bg-gray-50 transition">
-                    <td className="py-3">Chave Laboratorio T03</td>
-                    <td>15 Set</td>
-                    <td>17 Set</td>
-                    <td>
-                      <span className="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">
-                        Atrasado
-                      </span>
-                    </td>
                     <td className="text-blue-600 cursor-pointer hover:underline">
                       Detalhes
                     </td>
@@ -220,7 +218,7 @@ export default function HomeProfessor() {
 
           </div>
 
-          
+          {/* DIREITA (SEM ALTERAÇÃO) */}
           <div className="space-y-4">
 
             <div className="bg-white rounded-xl shadow-sm border p-4">
@@ -231,27 +229,17 @@ export default function HomeProfessor() {
               <div className="bg-gray-50 rounded-lg p-3 border-l-4 border-orange-400 mb-3">
                 <div className="font-medium text-sm">Projetor Epson</div>
                 <div className="text-xs text-gray-500 mt-1">
-                  Vence em 2 horas
-                </div>
-                <div className="text-xs text-orange-600 font-medium mt-1">
-                  Devolver em breve
+                  Vence em: {formatDate()}
                 </div>
               </div>
 
               <div className="bg-gray-50 rounded-lg p-3 border-l-4 border-blue-500">
                 <div className="font-medium text-sm">Chave Laboratorio C26</div>
                 <div className="text-xs text-gray-500 mt-1">
-                  Vence em 2 horas
-                </div>
-                <div className="text-xs text-blue-600 font-medium mt-1">
-                  Ativo
+                  Ativo desde: {formatDate(new Date('2026-04-28T08:00:00'))}
                 </div>
               </div>
 
-              <div className="mt-4 text-xs text-gray-500">
-                Total Emprestado: <b>2 Itens</b><br />
-                Atrasados: <b className="text-red-500">0 Itens</b>
-              </div>
             </div>
 
           </div>

@@ -1,13 +1,9 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import {
-  LayoutDashboard,
-  Package,
   ArrowRightLeft,
-  Undo2,
-  BarChart,
-  Settings,
   Bell,
   Search,
 } from 'lucide-react'
@@ -27,17 +23,30 @@ export default function EmprestimoPage() {
           </div>
 
           <nav className="px-3 space-y-1 text-sm">
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
-              <LayoutDashboard size={16}/> Dashboard
-            </div>
 
-            <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border-l-4 border-blue-600 rounded-lg">
+            {/* DASHBOARD */}
+            <Link
+              href="/professor/homeprofessor"
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
+            >
+              <ArrowRightLeft size={16}/> Dashboard
+            </Link>
+
+            {/* EMPRÉSTIMOS */}
+            <Link
+              href="/professor/emprestimoprofessor"
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
+            >
               <ArrowRightLeft size={16}/> Empréstimos
-            </div>
+            </Link>
 
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
-              <Undo2 size={16}/> Devoluções
-            </div>
+            {/* DEVOLUÇÕES */}
+            <Link
+              href="/professor/devolucao"
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
+            >
+              <ArrowRightLeft size={16}/> Devoluções
+            </Link>
 
           </nav>
         </div>
@@ -48,6 +57,7 @@ export default function EmprestimoPage() {
 
         {/* TOPBAR */}
         <div className="flex justify-between items-center mb-6">
+
           <div className="flex items-center border rounded-lg px-3 py-1.5 bg-white shadow-sm focus-within:ring-2 focus-within:ring-blue-500">
             <Search size={16} className="text-gray-400" />
             <input
@@ -81,16 +91,12 @@ export default function EmprestimoPage() {
           {/* ESQUERDA */}
           <div className="col-span-2 space-y-6">
 
-            {/* SWITCH */}
-            <div className="flex gap-3">
-              <button className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-medium">
-                📶 Escanear NFC
-              </button>
+            <button className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-medium">
+              📶 Escanear NFC
+            </button>
 
-            </div>
-
-            {/* NFC CARD */}
             <div className="bg-white rounded-xl border shadow-sm p-8 text-center">
+
               <div className="text-5xl mb-4">📡</div>
 
               <h2 className="font-semibold text-lg">
@@ -105,9 +111,8 @@ export default function EmprestimoPage() {
                 placeholder="Digite o código (ex: 2024-001)"
                 className="border rounded-lg px-4 py-3 w-80 text-center mb-4 bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none"
               />
+
             </div>
-
-
 
           </div>
 
@@ -119,7 +124,6 @@ export default function EmprestimoPage() {
                 Seus Itens Atuais
               </h3>
 
-              {/* PROJETOR */}
               <div className="flex gap-3 mb-3">
                 <Image
                   src="/images/projetor.jpg"
@@ -136,7 +140,6 @@ export default function EmprestimoPage() {
                 </div>
               </div>
 
-              {/* CHAVE */}
               <div className="flex gap-3">
                 <Image
                   src="/images/chave.jpg"
@@ -152,6 +155,7 @@ export default function EmprestimoPage() {
                   </div>
                 </div>
               </div>
+
             </div>
 
             <div className="bg-blue-800 text-white rounded-xl p-4">

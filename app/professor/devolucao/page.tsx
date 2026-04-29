@@ -10,7 +10,7 @@ import {
 
 export default function DevolucoesPage() {
 
-  // ✅ FORMATO: dd/mm/aaaa hh:mm
+  // 📅 FORMATO: dd/mm/aaaa hh:mm
   const formatDate = (date = new Date()) => {
     const d = String(date.getDate()).padStart(2, '0')
     const m = String(date.getMonth() + 1).padStart(2, '0')
@@ -27,12 +27,15 @@ export default function DevolucoesPage() {
 
       {/* SIDEBAR */}
       <aside className="w-64 bg-white border-r flex flex-col justify-between">
+
         <div>
-          <div className="p-5">
-            <h1 className="text-lg font-bold text-blue-800">SIGE</h1>
-            <p className="text-xs text-gray-500">
-              Sistema de Gestão de Equipamentos
-            </p>
+          <div className="p-5 flex justify-center">
+            <Image
+            src="/images/logo-sige.png"
+            alt="SIGE Logo"
+            width={120}
+            height={40}
+            className="object-contain"/>
           </div>
 
           <nav className="px-3 space-y-1 text-sm">
@@ -60,6 +63,17 @@ export default function DevolucoesPage() {
 
           </nav>
         </div>
+
+        {/* 🚪 LOGOUT CENTRALIZADO */}
+        <div className="p-4 border-t flex justify-center">
+          <button
+            onClick={() => window.location.href = "/"}
+            className="text-red-600 hover:text-red-700 text-sm font-medium transition"
+          >
+            Sair da conta
+          </button>
+        </div>
+
       </aside>
 
       {/* MAIN */}
@@ -97,25 +111,21 @@ export default function DevolucoesPage() {
           </p>
         </div>
 
-        {/* CARDS */}
+        {/* CARDS (MANTIDOS IGUAL) */}
         <div className="grid grid-cols-3 gap-6 mb-6">
 
           <div className="bg-white rounded-xl border shadow-sm p-6">
             <p className="text-xs text-gray-500 mb-1">
               TOTAL DE DEVOLUÇÕES
             </p>
-            <h2 className="text-2xl font-bold text-blue-700">
-              128
-            </h2>
+            <h2 className="text-2xl font-bold text-blue-700">128</h2>
           </div>
 
           <div className="bg-white rounded-xl border shadow-sm p-6">
             <p className="text-xs text-gray-500 mb-1">
               ITENS ESTE MÊS
             </p>
-            <h2 className="text-2xl font-bold text-blue-700">
-              14
-            </h2>
+            <h2 className="text-2xl font-bold text-blue-700">14</h2>
           </div>
 
           <div className="bg-white rounded-xl border shadow-sm p-6">
@@ -192,15 +202,15 @@ export default function DevolucoesPage() {
                 </span>
               </div>
 
-              {/* ✅ DATA FORMATADA FINAL */}
+              {/* 📅 DATA FORMATADA */}
               <div className="text-sm">
                 {formatDate(item.data)}
               </div>
 
               <div>
                 <span className={`text-xs px-3 py-1 rounded-full font-medium
-                  ${item.cor === 'green' && 'bg-green-100 text-green-700'}
-                  ${item.cor === 'yellow' && 'bg-yellow-100 text-yellow-700'}
+                  ${item.cor === 'green' ? 'bg-green-100 text-green-700' : ''}
+                  ${item.cor === 'yellow' ? 'bg-yellow-100 text-yellow-700' : ''}
                 `}>
                   {item.status}
                 </span>

@@ -14,17 +14,20 @@ export default function EmprestimoPage() {
 
       {/* SIDEBAR */}
       <aside className="w-64 bg-white border-r flex flex-col justify-between">
+
+        {/* TOPO */}
         <div>
-          <div className="p-5">
-            <h1 className="text-lg font-bold text-blue-800">SIGE</h1>
-            <p className="text-xs text-gray-500">
-              Sistema de Gestão de Equipamentos
-            </p>
+          <div className="p-5 flex justify-center">
+            <Image
+            src="/images/logo-sige.png"
+            alt="SIGE Logo"
+            width={120}
+            height={40}
+            className="object-contain"/>
           </div>
 
           <nav className="px-3 space-y-1 text-sm">
 
-            {/* DASHBOARD */}
             <Link
               href="/professor/homeprofessor"
               className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
@@ -32,7 +35,6 @@ export default function EmprestimoPage() {
               <ArrowRightLeft size={16}/> Dashboard
             </Link>
 
-            {/* EMPRÉSTIMOS */}
             <Link
               href="/professor/emprestimoprofessor"
               className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
@@ -40,7 +42,6 @@ export default function EmprestimoPage() {
               <ArrowRightLeft size={16}/> Empréstimos
             </Link>
 
-            {/* DEVOLUÇÕES */}
             <Link
               href="/professor/devolucao"
               className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
@@ -50,6 +51,21 @@ export default function EmprestimoPage() {
 
           </nav>
         </div>
+
+        {/* 🔴 BOTÃO SAIR CENTRALIZADO */}
+        <div className="p-4 border-t flex justify-center">
+
+          <button
+            onClick={() => {
+              window.location.href = "/"
+            }}
+            className="text-red-600 hover:text-red-700 text-sm font-medium transition"
+          >
+           Sair da conta
+          </button>
+
+        </div>
+
       </aside>
 
       {/* MAIN */}
@@ -168,6 +184,7 @@ export default function EmprestimoPage() {
           </div>
 
         </div>
+
       </main>
     </div>
   )

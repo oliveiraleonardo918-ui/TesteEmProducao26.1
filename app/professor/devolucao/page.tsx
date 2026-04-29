@@ -32,24 +32,13 @@ export default function DevolucoesPage() {
             </div>
 
             <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
-              <Package size={16}/> Inventário
-            </div>
-
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
               <ArrowRightLeft size={16}/> Empréstimos
             </div>
 
             <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border-l-4 border-blue-600 rounded-lg">
-              <Undo2 size={16}/> Minhas Devoluções
+              <Undo2 size={16}/> Devoluções
             </div>
 
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
-              <BarChart size={16}/> Relatórios
-            </div>
-
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
-              <Settings size={16}/> Configurações
-            </div>
           </nav>
         </div>
       </aside>

@@ -28,35 +28,18 @@ export default function EmprestimoPage() {
 
           <nav className="px-3 space-y-1 text-sm">
             <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
-              <LayoutDashboard size={16} /> Dashboard
-            </div>
-
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
-              <Package size={16} /> Inventário
+              <LayoutDashboard size={16}/> Dashboard
             </div>
 
             <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border-l-4 border-blue-600 rounded-lg">
-              <ArrowRightLeft size={16} /> Empréstimos
+              <ArrowRightLeft size={16}/> Empréstimos
             </div>
 
             <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
-              <Undo2 size={16} /> Devoluções
+              <Undo2 size={16}/> Devoluções
             </div>
 
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
-              <BarChart size={16} /> Relatórios
-            </div>
-
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
-              <Settings size={16} /> Configurações
-            </div>
           </nav>
-        </div>
-
-        <div className="p-4">
-          <button className="w-full bg-blue-700 text-white py-2 rounded-lg hover:bg-blue-800 transition">
-            + Novo Empréstimo
-          </button>
         </div>
       </aside>
 

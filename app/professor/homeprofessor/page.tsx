@@ -11,6 +11,9 @@ import {
   Search,
   Bell,
   Settings,
+  Package,
+  ArrowRightLeft,
+  BarChart,
 } from 'lucide-react'
 
 export default function HomeProfessor() {
@@ -20,41 +23,27 @@ export default function HomeProfessor() {
       {/* SIDEBAR */}
       <aside className="w-64 bg-white border-r flex flex-col justify-between">
         <div>
-          <div className="p-5 font-bold text-blue-800 text-lg">
-            SIGE
-          </div>
-
-          <div className="px-4 mb-4">
-            <button className="w-full bg-blue-700 text-white py-2 rounded-lg font-medium hover:bg-blue-800 transition">
-              + Novo Empréstimo
-            </button>
+          <div className="p-5">
+            <h1 className="text-lg font-bold text-blue-800">SIGE</h1>
+            <p className="text-xs text-gray-500">
+              Sistema de Gestão de Equipamentos
+            </p>
           </div>
 
           <nav className="px-3 space-y-1 text-sm">
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 text-blue-700 border-l-4 border-blue-600">
-              <LayoutDashboard size={16} /> Painel
+            <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border-l-4 border-blue-600 rounded-lg">
+              <LayoutDashboard size={16}/> Dashboard
             </div>
 
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg cursor-pointer transition">
-              <Repeat size={16} /> Empréstimo
+            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
+              <ArrowRightLeft size={16}/> Empréstimos
             </div>
 
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg cursor-pointer transition">
-              <Undo2 size={16} /> Devolução
+            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg">
+              <Undo2 size={16}/> Devoluções
             </div>
 
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg cursor-pointer transition">
-              <Box size={16} /> Itens
-            </div>
-
-            <div className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg cursor-pointer transition">
-              <Users size={16} /> Usuários
-            </div>
           </nav>
-        </div>
-
-        <div className="p-4 text-sm text-gray-500 flex items-center gap-2 hover:text-gray-700 cursor-pointer">
-          <LogOut size={16} /> Sair
         </div>
       </aside>
 

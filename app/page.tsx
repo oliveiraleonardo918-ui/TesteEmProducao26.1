@@ -107,19 +107,6 @@ export default function LoginPage() {
               Entrar
             </button>
 
-            {/* Divider */}
-            <div className="my-6 flex items-center gap-3">
-              <div className="flex-1 h-px bg-gray-200"></div>
-              <span className="text-xs text-gray-400">
-                OU
-              </span>
-              <div className="flex-1 h-px bg-gray-200"></div>
-            </div>
-
-            {/* SSO */}
-            <button className="w-full border border-gray-300 py-2.5 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition">
-              Entrar com Google
-            </button>
           </div>
 
           {/* Footer */}

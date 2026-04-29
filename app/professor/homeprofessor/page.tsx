@@ -155,7 +155,7 @@ export default function HomeProfessor() {
 
             </div>
 
-            {/* TABELA */}
+            
             <div className="bg-white rounded-xl shadow-sm border p-4">
               <h3 className="font-semibold mb-4">
                 Histórico Recente de Empréstimos
@@ -220,7 +220,7 @@ export default function HomeProfessor() {
 
           </div>
 
-          {/* DIREITA */}
+          
           <div className="space-y-4">
 
             <div className="bg-white rounded-xl shadow-sm border p-4">

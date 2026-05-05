@@ -143,6 +143,18 @@ Criar uma aplicação de gestão patrimonial para o controle de empréstimos e d
 
 ---
 
-## 7. PROTÓTIPO DE BAIXA FIDELIDADE
+## 7. DIAGRAMA DE CLASSES
+
+---
+
+## 8. DIAGRAMA DE CASOS DE USO
+
+---
+
+## 9. DIAGRAMA DE SEQUÊNCIA
+
+---
+
+## 10. PROTÓTIPO DE BAIXA FIDELIDADE
 
 ---

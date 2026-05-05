@@ -74,6 +74,71 @@ Criar uma aplicação de gestão patrimonial para o controle de empréstimos e d
 
 ---
 
-## 5. PROTÓTIPO DE BAIXA FIDELIDADE
+## 5. CASOS DE USO
+
+### UC01 - Cadastrar Novo Usuário (Atendente/Gestor)
+* **Ator:** Administrador ou Gestor.
+* **Descrição:** Permite a criação de novos perfis para operar o sistema (outros atendentes ou gestores).
+* **Fluxo Principal:** 1. O administrador acessa a área de gestão de usuários.
+    2. Insere nome, e-mail, matrícula e define o nível de acesso (role).
+    3. O sistema valida os dados e persiste no Firebase.
+
+### UC02 - Cadastrar Novo Professor
+* **Ator:** Atendente ou Administrador.
+* **Descrição:** Registro de professores habilitados a solicitar empréstimos.
+* **Fluxo Principal:** 1. O atendente solicita a matrícula e o nome completo do professor.
+    2. O sistema verifica se a matrícula já existe.
+    3. O registro é salvo como um perfil de "Professor".
+
+### UC03 - Realizar Empréstimo de Ativo
+* **Ator:** Atendente.
+* **Descrição:** Registro da saída de um projetor ou chave para uso acadêmico.
+* **Fluxo Principal:** 1. O atendente identifica o professor pela matrícula.
+    2. O sistema lista os ativos disponíveis (status: "Disponível").
+    3. O atendente seleciona o ativo (projetor ou chave) e confirma a data/hora.
+    4. O status do ativo muda para "Emprestado".
+
+### UC04 - Realizar Devolução de Ativo
+* **Ator:** Atendente.
+* **Descrição:** Registro do retorno do item à secretaria.
+* **Fluxo Principal:** 1. O atendente localiza o empréstimo ativo pelo item ou pela matrícula do professor.
+    2. Confirma o recebimento e verifica o estado do item.
+    3. O sistema registra o horário de devolução e altera o status do ativo para "Disponível".
+
+### UC05 - Troca de Ativo por Defeito
+* **Ator:** Atendente.
+* **Descrição:** Substituição rápida de um item durante um empréstimo em caso de falha técnica.
+* **Fluxo Principal:** 1. O atendente acessa o empréstimo em curso.
+    2. Seleciona a opção "Trocar por defeito".
+    3. O item defeituoso tem seu status alterado para "Em Manutenção".
+    4. O atendente seleciona um novo item disponível para substituir.
+    5. O sistema gera um novo vínculo de movimentação para o novo item.
+
+### UC06 - Gerar Relatório de Movimentações
+* **Ator:** Atendente ou Administrador.
+* **Descrição:** Geração de logs de todas as saídas e entradas em um período.
+* **Fluxo Principal:** 1. O usuário seleciona o período (data início e fim).
+    2. O sistema filtra todas as movimentações (empréstimos, devoluções e trocas).
+    3. Exibe a lista formatada ou permite exportação dos dados.
+
+### UC07 - Consultar Inventário e Status de Ativos
+* **Ator:** Atendente ou Gestor.
+* **Descrição:** Visualização rápida do estado de todos os itens do patrimônio.
+* **Fluxo Principal:** 1. O usuário acessa a dashboard de ativos.
+    2. O sistema exibe a lista filtrável por:
+        * **Disponíveis:** Prontos para uso.
+        * **Alugados/Emprestados:** Identifica com qual professor está o item.
+        * **Em Manutenção:** Itens com defeito aguardando reparo.
+
+### UC08 - Cadastrar Novo Ativo (Chave ou Projetor)
+* **Ator:** Atendente ou Administrador.
+* **Descrição:** Inclusão de novos itens físicos no inventário do CT.
+* **Fluxo Principal:** 1. O usuário escolhe o tipo de ativo (Chave ou Projetor).
+    2. Preenche os dados obrigatórios (Marca/Modelo para projetor; Sala/Bloco para chaves).
+    3. Insere o número de patrimônio e define o status inicial como "Disponível".
+
+---
+
+## 6. PROTÓTIPO DE BAIXA FIDELIDADE
 
 ---

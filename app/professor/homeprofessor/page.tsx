@@ -2,171 +2,147 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import {
-  ArrowRightLeft,
-  Bell,
-  Search,
-} from 'lucide-react'
+import { ArrowRightLeft, Bell, Search, Menu } from 'lucide-react'
+import { useState } from 'react'
 
 export default function DevolucoesPage() {
+  const [open, setOpen] = useState(false)
 
   const formatDate = (date = new Date()) => {
     const d = String(date.getDate()).padStart(2, '0')
     const m = String(date.getMonth() + 1).padStart(2, '0')
     const y = date.getFullYear()
-
     const h = String(date.getHours()).padStart(2, '0')
     const min = String(date.getMinutes()).padStart(2, '0')
-
     return `${d}/${m}/${y} ${h}:${min}`
   }
 
+  const menu = [
+    { href: '/professor/homeprofessor', label: 'Dashboard' },
+    { href: '/professor/emprestimoprofessor', label: 'Empréstimos' },
+    { href: '/professor/devolucao', label: 'Devoluções' }
+  ]
+
   return (
-    <div className="min-h-screen flex bg-gray-100 text-gray-800">
+    <div className="min-h-screen flex bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 overflow-x-hidden">
 
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-white border-r flex flex-col justify-between">
+      {open && (
+        <div
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 bg-black/60 z-40 md:hidden"
+        />
+      )}
 
-        {/* TOPO */}
-        <div>
-          <div className="p-5 flex justify-center">
-            <Image
-            src="/images/logo-sige.png"
-            alt="SIGE Logo"
-            width={120}
-            height={40}
-            className="object-contain"/>
-
-          </div>
-
-          <nav className="px-3 space-y-1 text-sm">
-
-            <Link
-              href="/professor/homeprofessor"
-              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
-            >
-              <ArrowRightLeft size={16}/> Dashboard
-            </Link>
-
-            <Link
-              href="/professor/emprestimoprofessor"
-              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
-            >
-              <ArrowRightLeft size={16}/> Empréstimos
-            </Link>
-
-            <Link
-              href="/professor/devolucao"
-              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
-            >
-              <ArrowRightLeft size={16}/> Devoluções
-            </Link>
-
-          </nav>
+      <aside className={`
+        fixed md:static z-50 top-0 left-0 h-full w-72
+        bg-slate-900/80 backdrop-blur-xl border-r border-slate-700/40
+        transform transition-transform duration-300
+        ${open ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+      `}>
+        <div className="flex items-center justify-between p-5 border-b border-slate-700/40">
+          <Image src="/images/logo-sige.png" alt="logo" width={110} height={40} />
         </div>
 
-        {/* 🔴 BOTÃO SAIR CENTRALIZADO */}
-        <div className="p-4 border-t flex justify-center">
+        <nav className="px-3 py-4 space-y-2 text-sm">
+          {menu.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="flex items-center gap-2 p-3 rounded-xl text-slate-300 hover:text-white hover:bg-cyan-500/10 border border-transparent hover:border-cyan-500/30 transition"
+            >
+              <ArrowRightLeft size={16} className="text-cyan-400" />
+              {item.label}
+            </Link>
+          ))}
+        </nav>
 
+        <div className="absolute bottom-0 w-full p-4 border-t border-slate-700/40 flex justify-center">
           <button
-            onClick={() => {
-              window.location.href = "/"
-            }}
-            className="text-red-600 hover:text-red-700 text-sm font-medium transition"
+            onClick={() => (window.location.href = '/')}
+            className="text-red-400 hover:text-red-300 text-sm font-semibold"
           >
-             Sair da conta
+            Sair da conta
           </button>
-
         </div>
-
       </aside>
 
-      {/* MAIN */}
-      <main className="flex-1 p-6">
+      <main className="flex-1 md:ml-72 p-4 md:p-8">
 
-        {/* TOPBAR */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center border rounded-lg px-3 py-1.5 bg-white shadow-sm">
-            <Search size={16} className="text-gray-400"/>
+        {/* TOPBAR CORRIGIDO (PERFIL NO CANTO DIREITO) */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+
+          <button
+            onClick={() => setOpen(true)}
+            className="md:hidden p-2 bg-slate-800 rounded-lg w-fit"
+          >
+            <Menu />
+          </button>
+
+          <div className="flex items-center gap-2 bg-slate-900/60 border border-slate-700/40 px-4 py-2 rounded-xl w-full md:w-96">
+            <Search size={16} className="text-slate-400" />
             <input
-              placeholder="Buscar por item ou código..."
-              className="ml-2 outline-none text-sm"
+              placeholder="Buscar item ou código..."
+              className="w-full bg-transparent outline-none text-sm text-slate-200"
             />
           </div>
 
-          <div className="flex items-center gap-4">
-            <Bell className="text-gray-500"/>
-            <div className="text-sm">
-              <div className="font-medium">Prof. Bezerra</div>
-              <div className="text-gray-500 text-xs">
-                Ciência da Computação
-              </div>
+          <div className="absolute md:static right-0 top-0 flex items-center gap-3">
+            <Bell className="text-slate-400" />
+
+            <div className="text-right leading-tight">
+              <div className="text-sm font-semibold">Prof. Bezerra</div>
+              <div className="text-xs text-slate-400">TI</div>
             </div>
-            <div className="w-8 h-8 bg-gray-300 rounded-full"/>
+
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500 to-violet-600" />
           </div>
+
         </div>
 
-        {/* HEADER */}
         <div className="mb-6">
-          <h1 className="text-2xl font-semibold">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight bg-gradient-to-r from-cyan-400 to-violet-500 text-transparent bg-clip-text">
             Histórico de Devoluções
           </h1>
-          <p className="text-sm text-gray-500">
-            Visualize todos os seus equipamentos devolvidos.
+          <p className="text-sm text-slate-400 mt-1">
+            Acompanhe todos os equipamentos devolvidos em tempo real.
           </p>
         </div>
 
-        {/* CARDS */}
-        <div className="grid grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
-          <div className="bg-white rounded-xl border shadow-sm p-6">
-            <p className="text-xs text-gray-500 mb-1">
-              TOTAL DE DEVOLUÇÕES
-            </p>
-            <h2 className="text-2xl font-bold text-blue-700">
-              128
-            </h2>
+          <div className="bg-slate-900/60 border border-slate-700/40 rounded-2xl p-6">
+            <p className="text-xs text-slate-400">TOTAL DE DEVOLUÇÕES</p>
+            <h2 className="text-3xl font-bold text-cyan-400 mt-2">128</h2>
           </div>
 
-          <div className="bg-white rounded-xl border shadow-sm p-6">
-            <p className="text-xs text-gray-500 mb-1">
-              ITENS ESTE MÊS
-            </p>
-            <h2 className="text-2xl font-bold text-blue-700">
-              14
-            </h2>
+          <div className="bg-slate-900/60 border border-slate-700/40 rounded-2xl p-6">
+            <p className="text-xs text-slate-400">ITENS ESTE MÊS</p>
+            <h2 className="text-3xl font-bold text-violet-400 mt-2">14</h2>
           </div>
 
-          <div className="bg-white rounded-xl border shadow-sm p-6">
-            <p className="text-xs text-gray-500 mb-1">
-              CONDIÇÃO MÉDIA
-            </p>
-            <h2 className="text-lg font-semibold text-green-600">
+          <div className="bg-slate-900/60 border border-slate-700/40 rounded-2xl p-6">
+            <p className="text-xs text-slate-400">CONDIÇÃO MÉDIA</p>
+            <h2 className="text-xl font-semibold text-emerald-400 mt-2">
               Excelente
             </h2>
           </div>
 
         </div>
 
-        {/* FILTROS */}
-        <div className="bg-white rounded-xl border shadow-sm p-4 flex gap-3 mb-6">
-          <button className="border px-4 py-2 rounded-lg text-sm bg-gray-50">
-            Tipo de Equipamento
-          </button>
-
-          <button className="border px-4 py-2 rounded-lg text-sm bg-gray-50">
-            Filtros Avançados
-          </button>
-
-          <button className="border px-4 py-2 rounded-lg text-sm bg-gray-50">
-            Período
-          </button>
+        <div className="flex flex-wrap gap-3 mb-6">
+          {['Tipo de Equipamento', 'Filtros Avançados', 'Período'].map((f) => (
+            <button
+              key={f}
+              className="px-4 py-2 rounded-xl text-sm bg-slate-900/60 border border-slate-700/40 text-slate-300 hover:border-cyan-500/40 hover:text-white transition"
+            >
+              {f}
+            </button>
+          ))}
         </div>
 
-        {/* TABELA */}
-        <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+        <div className="bg-slate-900/60 border border-slate-700/40 rounded-2xl overflow-x-auto">
 
-          <div className="grid grid-cols-5 text-xs text-gray-500 px-6 py-3 border-b bg-gray-50">
+          <div className="min-w-[700px] grid grid-cols-5 text-xs text-slate-400 px-6 py-4 border-b border-slate-700/40">
             <div>ITEM</div>
             <div>DATA</div>
             <div>CONDIÇÃO</div>
@@ -179,56 +155,57 @@ export default function DevolucoesPage() {
               nome: 'Chave Laboratório D88',
               data: new Date('2026-04-12T10:30:00'),
               status: 'PERFEITO',
-              cor: 'green',
+              cor: 'cyan',
               user: 'Ana Ferreira',
-              img: '/images/chave.jpg',
+              img: '/images/chave.jpg'
             },
             {
               nome: 'Projetor Sony 4K',
               data: new Date('2026-04-08T09:15:00'),
               status: 'DESGASTE',
-              cor: 'yellow',
+              cor: 'violet',
               user: 'Carlos Mendes',
-              img: '/images/projetor.jpg',
-            },
+              img: '/images/projetor.jpg'
+            }
           ].map((item, i) => (
             <div
               key={i}
-              className="grid grid-cols-5 items-center px-6 py-4 border-b hover:bg-gray-50"
+              className="min-w-[700px] grid grid-cols-5 items-center px-6 py-4 border-b border-slate-800 hover:bg-slate-800/40 transition"
             >
+
               <div className="flex items-center gap-3">
                 <Image
                   src={item.img}
                   alt=""
                   width={40}
                   height={40}
-                  className="rounded-md object-cover"
+                  className="rounded-lg object-cover border border-slate-700"
                 />
-                <span className="text-sm font-medium">
-                  {item.nome}
-                </span>
+                <span className="text-sm text-slate-200">{item.nome}</span>
               </div>
 
-              <div className="text-sm">
+              <div className="text-sm text-slate-400">
                 {formatDate(item.data)}
               </div>
 
               <div>
-                <span className={`text-xs px-3 py-1 rounded-full font-medium
-                  ${item.cor === 'green' && 'bg-green-100 text-green-700'}
-                  ${item.cor === 'yellow' && 'bg-yellow-100 text-yellow-700'}
-                `}>
+                <span className={`text-xs px-3 py-1 rounded-full font-medium border ${
+                  item.cor === 'cyan'
+                    ? 'text-cyan-300 border-cyan-500/40 bg-cyan-500/10'
+                    : 'text-violet-300 border-violet-500/40 bg-violet-500/10'
+                }`}>
                   {item.status}
                 </span>
               </div>
 
-              <div className="text-sm">{item.user}</div>
+              <div className="text-sm text-slate-300">{item.user}</div>
 
               <div className="text-right">
-                <button className="text-blue-600 text-sm hover:underline">
+                <button className="text-cyan-400 hover:text-cyan-300 text-sm font-medium">
                   Ver comprovante
                 </button>
               </div>
+
             </div>
           ))}
 

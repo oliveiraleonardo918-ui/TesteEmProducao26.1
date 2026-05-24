@@ -57,6 +57,8 @@ Criar uma aplicação de gestão patrimonial para o controle de empréstimos e d
 | **RF06** | CRUD Chave | Cadastro com sala, bloco e status. | Alta |
 | **RF07** | CRUD Usuário | Cadastro com nome, e-mail, matrícula e role. | Alta |
 | **RF08** | Movimentação | Registro de empréstimo/devolução com data, hora, professor e sala. | Alta |
+| **RF09** | Pesquisa de Itens | Permitir pesquisar itens cadastrados por nome, patrimônio, tipo, sala, bloco ou status. | Alta |
+| **RF10** | Chave Reserva | Permitir cadastrar, consultar e controlar chaves reservas vinculadas a salas, blocos ou ativos. | Alta |
 
 ---
 
@@ -163,6 +165,79 @@ Criar uma aplicação de gestão patrimonial para o controle de empréstimos e d
 
 ---
 
+## 5.1. CASOS DE USO CRÍTICOS SELECIONADOS
+
+Foram selecionados como casos de uso críticos aqueles que representam as operações essenciais para o funcionamento mínimo do sistema de controle patrimonial do CT.
+
+| Caso de Uso | Justificativa |
+| :--- | :--- |
+| **UC03 - Realizar Empréstimo de Ativo** | Representa a principal operação do sistema, permitindo registrar a saída de projetores ou chaves para uso acadêmico. |
+| **UC04 - Realizar Devolução de Ativo** | Finaliza o ciclo de movimentação patrimonial, atualizando o status do item e mantendo o controle do inventário. |
+| **UC07 - Consultar Inventário e Status de Ativos** | Permite verificar a disponibilidade dos itens antes de realizar empréstimos. |
+| **UC08 - Cadastrar Novo Ativo** | Garante que projetores e chaves estejam registrados no sistema para posterior controle. |
+| **UC05 - Troca de Ativo por Defeito** | Trata uma Cenário básico importante quando um item apresenta falha durante o uso. |
+
+### 5.1.1. Situações Básicas e Alternativas dos Casos de Uso Críticos
+
+#### UC03 - Realizar Empréstimo de Ativo
+
+- **Cenário básico:** O atendente identifica o professor, seleciona um ativo disponível e confirma o empréstimo.
+- **Cenário básico 1:** Caso o professor possua pendência, o sistema bloqueia o empréstimo.
+- **Cenário básico 2:** Caso não existam ativos disponíveis, o sistema informa a indisponibilidade.
+- **Resultado esperado:** O ativo fica com status **Emprestado** e a movimentação é registrada no sistema.
+
+#### UC04 - Realizar Devolução de Ativo
+
+- **Cenário básico:** O atendente localiza o empréstimo ativo, confirma o recebimento do item e registra a devolução.
+- **Cenário básico:** Caso o item seja devolvido com defeito, o sistema permite registrar a ocorrência e alterar o status para **Em Manutenção**.
+- **Resultado esperado:** O ativo volta ao status **Disponível** ou passa para **Em Manutenção**, conforme a situação.
+
+#### UC07 - Consultar Inventário e Status de Ativos
+
+- **Cenário básico:** O usuário acessa a dashboard de ativos e consulta os itens disponíveis, emprestados ou em manutenção.
+- **Cenário básico:** Caso não existam itens cadastrados, o sistema exibe uma mensagem informando ausência de registros.
+- **Resultado esperado:** O usuário visualiza a situação atual dos ativos do patrimônio.
+
+#### UC08 - Cadastrar Novo Ativo
+
+- **Cenário básico:** O usuário escolhe o tipo de ativo, preenche os dados obrigatórios e salva o cadastro.
+- **Cenário básico:** Caso existam campos obrigatórios não preenchidos, o sistema exibe uma mensagem de erro.
+- **Resultado esperado:** O novo ativo é registrado no sistema com status inicial **Disponível**.
+
+#### UC05 - Troca de Ativo por Defeito
+
+- **Cenário básico:** O atendente identifica defeito em um ativo, registra a falha, altera o status para **Em Manutenção** e seleciona um novo item disponível para substituição.
+- **Cenário básico:** Caso não exista item substituto disponível, o sistema informa a impossibilidade de troca.
+- **Resultado esperado:** O item defeituoso fica registrado como **Em Manutenção** e, se houver substituto, uma nova movimentação é criada.
+
+### UC09 - Pesquisar Itens
+
+- **Ator:** Atendente, Professor ou Administrador.
+- **Descrição:** Permite localizar rapidamente itens cadastrados no sistema.
+- **Fluxo Principal:**
+  1. O usuário acessa a lista de ativos.
+  2. O usuário digita um termo de pesquisa.
+  3. O sistema filtra os itens por nome, patrimônio, tipo, sala, bloco ou status.
+  4. O sistema exibe os resultados encontrados.
+- **Fluxo Alternativo:**
+  - Caso nenhum item seja encontrado, o sistema exibe uma mensagem informando que não há resultados para a pesquisa realizada.
+
+### UC10 - Gerenciar Chave Reserva
+
+- **Ator:** Atendente ou Administrador.
+- **Descrição:** Permite cadastrar, consultar, atualizar e controlar chaves reservas vinculadas a salas, blocos ou ativos.
+- **Fluxo Principal:**
+  1. O usuário acessa a área de cadastro ou gerenciamento de chaves.
+  2. O usuário seleciona a opção de chave reserva.
+  3. O usuário informa os dados da chave, como sala, bloco, identificação e status.
+  4. O sistema valida os dados preenchidos.
+  5. O sistema salva a chave reserva no inventário.
+  6. A chave passa a ficar disponível para consulta e controle de empréstimos.
+- **Fluxo Alternativo:**
+  - Caso os dados obrigatórios não sejam preenchidos, o sistema exibe uma mensagem de erro e solicita correção.
+
+---
+
 ## 6. REGRAS DE NEGÓCIO (RN)
 
 | ID | Regra | Descrição |
@@ -175,6 +250,8 @@ Criar uma aplicação de gestão patrimonial para o controle de empréstimos e d
 | **RN06** | **Registro de Defeito** | Ao trocar um ativo por defeito, o sistema deve obrigatoriamente exigir uma breve descrição da falha para fins de manutenção. |
 | **RN07** | **Hierarquia de Cadastro** | Apenas usuários com perfil **Administrador/Gestor** podem excluir ativos ou usuários do sistema. Atendentes podem apenas cadastrar ou editar. |
 | **RN08** | **Integridade de Histórico** | Movimentações finalizadas não podem ser excluídas, apenas consultadas para fins de auditoria e relatórios. |
+| **RN09** | **Controle de Chave Reserva** | Toda chave reserva deve estar vinculada a uma sala, bloco ou ativo, possuindo status definido como **Disponível**, **Emprestada** ou **Indisponível**. |
+| **RN10** | **Pesquisa de Itens** | A pesquisa deve retornar apenas itens compatíveis com o termo informado e permitir limpar o filtro para exibir a lista completa. |
 
 ---
 

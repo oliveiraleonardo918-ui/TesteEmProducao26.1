@@ -513,7 +513,8 @@ flowchart LR
 
 ### 8.4. Relações entre Casos de Uso
 
-<img width="513" height="584" alt="Captura de tela 2026-05-18 195130" src="https://github.com/user-attachments/assets/4b43494e-c731-4404-b157-6d963c74fd9a" />
+<img width="1448" height="1086" alt="image" src="https://github.com/user-attachments/assets/dba09236-cfb3-4b10-b6be-38f15925a070" />
+
 
 
 #### 8.4.1. Relação Include

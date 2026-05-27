@@ -36,7 +36,6 @@
 | **Reserva** | Solicitação antecipada do professor; o ativo passa ao status **Reservado** até o atendente confirmar o empréstimo (UC03). |
 | **Status do ativo** | `Disponível`, `Reservado`, `Emprestado`, `Em Manutenção` — vocabulário único para projetores e chaves. |
 | **Chave reserva** | Chave com `ehReserva = true` (cópia de segurança), não entidade separada. |
-| **Finalidade acadêmica** | Motivo do uso (ex.: aula, defesa, reunião), obrigatório em reserva e empréstimo. |
 | **Turno** | Manhã (07h–12h), tarde (12h–18h), noite (18h–23h) — referência para RN04, RN05 e RN11. |
 | **Pendência** | Empréstimo não devolvido até o fim do turno de saída (RN04) ou reserva não retirada após RN11. |
 | **role** | `ADMIN`, `ATENDENTE`, `PROFESSOR` — controle de acesso (RF07). |
@@ -67,7 +66,7 @@
 
 ### 1.1. Introdução
 
-A coordenação do Centro de Ciências Tecnológicas (CCT) gerencia diariamente a movimentação intensa de projetores multimídia e chaves de laboratórios e salas de aula. O fluxo envolve professores e equipe da secretaria (funcionários e estagiários, este último com perfil **Atendente** no sistema), exigindo registro de quem retirou o item, horário e **finalidade acadêmica** (RF15).
+A coordenação do Centro de Ciências Tecnológicas (CCT) gerencia diariamente a movimentação intensa de projetores multimídia e chaves de laboratórios e salas de aula. O fluxo envolve professores e equipe da secretaria (funcionários e estagiários, este último com perfil **Atendente** no sistema), exigindo registro de quem retirou o item e horário.
 
 ### 1.2. Objetivo Geral
 
@@ -126,9 +125,8 @@ Criar uma aplicação de gestão patrimonial para o controle de empréstimos e d
 | **RF12** | Troca por Defeito | Registrar troca durante empréstimo ativo, com descrição obrigatória do defeito. | Alta |
 | **RF13** | Reserva de Ativo | Professor solicita reserva; status **Reservado** vinculado à matrícula. | Alta |
 | **RF14** | Histórico e pendências | Professor consulta movimentações e bloqueios (UC12). | Alta |
-| **RF15** | Finalidade acadêmica | Campo obrigatório em reserva (UC11) e empréstimo (UC03). | Alta |
-| **RF16** | Liberar manutenção | Atendente/admin altera ativo de **Em Manutenção** para **Disponível** (UC15). | Alta |
-| **RF17** | Expiração de reservas | Job automático aplica RN11 (UC17). | Média |
+| **RF15** | Liberar manutenção | Atendente/admin altera ativo de **Em Manutenção** para **Disponível** (UC15). | Alta |
+| **RF16** | Expiração de reservas | Job automático aplica RN11 (UC17). | Média |
 
 ---
 
@@ -177,7 +175,7 @@ Criar uma aplicação de gestão patrimonial para o controle de empréstimos e d
 - **Fluxo Principal:**
   1. O atendente autentica-se e identifica o professor pela matrícula.
   2. O sistema lista ativos **Disponíveis** e **Reservados** para aquela matrícula.
-  3. O atendente seleciona o ativo (projetor ou chave) e informa a **finalidade acadêmica** (RF15).
+  3. O atendente seleciona o ativo (projetor ou chave).
   4. O atendente confirma data e hora e registra a confirmação da operação (RN03).
   5. O sistema valida disponibilidade, limites (RN01, RN02) e pendências (RN05).
   6. O sistema encerra movimentação aberta (se reserva), cria movimentação tipo `EMPRESTIMO`, limpa `matriculaReservada` e altera status para **Emprestado**.
@@ -279,7 +277,7 @@ Criar uma aplicação de gestão patrimonial para o controle de empréstimos e d
 - **Fluxo Principal:**
   1. O professor autentica-se com matrícula e senha.
   2. O professor consulta ativos com status **Disponível**.
-  3. O professor seleciona o ativo, informa **finalidade acadêmica** (RF15) e confirma a reserva.
+  3. O professor seleciona o ativo e confirma a reserva.
   4. O sistema valida limites (RN02) e pendências (RN05).
   5. O sistema registra movimentação tipo `RESERVA`, define status **Reservado** e preenche `matriculaReservada` no ativo.
 - **Fluxo Alternativo — Cancelar reserva:**
@@ -732,7 +730,7 @@ A **versão canônica** do diagrama de casos de uso está na seção **8.3 (Merm
 | **UC08** | Cadastrar novo ativo | Inclusão de projetor ou chave. |
 | **UC09** | Pesquisar itens | Busca com filtros combinados. |
 | **UC10** | Gerenciar chave reserva | Flag `ehReserva` em chaves. |
-| **UC11** | Solicitar reserva de ativo | Professor reserva com finalidade acadêmica. |
+| **UC11** | Solicitar reserva de ativo | Professor reserva |
 | **UC12** | Consultar histórico e pendências | Movimentações e bloqueios do professor. |
 | **UC13** | Editar cadastro de ativo | Atualização de dados do inventário. |
 | **UC14** | Excluir ativo | Exclusão restrita ao administrador. |
@@ -894,7 +892,7 @@ sequenceDiagram
 
 - Campo para matrícula do professor.
 - Lista de ativos **Disponíveis** e **Reservados** para a matrícula informada.
-- Campo **finalidade acadêmica** e sala de uso (RF15).
+- Campo sala de uso (RF15).
 - Seleção do item e botão confirmar empréstimo.
 
 ### 10.6. Tela de Devolução
@@ -915,7 +913,7 @@ sequenceDiagram
 ### 10.8. Tela de Reserva (Professor)
 
 - Lista de ativos **Disponíveis**.
-- Campo **finalidade acadêmica** e confirmação de reserva.
+- Campo confirmação de reserva.
 - Lista de reservas ativas com prazo (RN11) e botão cancelar.
 
 ### 10.9. Tela de Troca por Defeito (Atendente)

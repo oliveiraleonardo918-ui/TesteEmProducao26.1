@@ -1,7 +1,7 @@
 # DOCUMENTO DE REQUISITOS - Aplicativo GAC
 
-**Versão:** 1.2  
-**Data:** 2026-05-25  
+**Versão:** 1.3  
+**Data:** 2026-06-03  
 **Escopo:** Gestão patrimonial de projetores e chaves do CCT/UNIFOR
 
 ---
@@ -32,8 +32,10 @@
 | **Atendente** | Funcionário da secretaria (ou estagiário com o mesmo perfil no sistema) que registra empréstimos, devoluções, trocas e relatórios. |
 | **Estagiário** | Atua no balcão com o perfil **Atendente** no sistema; não é um perfil separado. |
 | **Administrador/Gestor** | Perfil com permissões elevadas (gestão de usuários, exclusão de registros, conforme RN07). |
-| **Professor** | Usuário que pode **reservar** ativos; a **devolução** é sempre registrada pelo atendente. |
-| **Reserva** | Solicitação antecipada do professor; o ativo passa ao status **Reservado** até o atendente confirmar o empréstimo (UC03). |
+| **Professor** | Usuário que **deve reservar** ativos pela plataforma antes da retirada na secretaria; a **devolução** é sempre registrada pelo atendente. |
+| **Reserva** | Solicitação antecipada obrigatória do professor; o ativo passa ao status **Reservado** até o atendente confirmar o empréstimo (UC03). Gera um **código de confirmação** de 4 dígitos para a movimentação. |
+| **Código de confirmação** | Código numérico de 4 dígitos gerado na reserva (UC11); o professor informa ao atendente para converter a reserva em empréstimo (UC03). Não é exigido na devolução (UC04). |
+| **Acessório de projetor** | Item vinculado ao projetor (ex.: controle remoto, cabo HDMI). Pode ser incluído ou não no empréstimo; se emprestado, deve ser devolvido junto com o projetor (UC04). |
 | **Status do ativo** | `Disponível`, `Reservado`, `Emprestado`, `Em Manutenção` — vocabulário único para projetores e chaves. |
 | **Chave reserva** | Chave com `ehReserva = true` (cópia de segurança), não entidade separada. |
 | **Turno** | Manhã (07h–12h), tarde (12h–18h), noite (18h–23h) — referência para RN04, RN05 e RN11. |
@@ -51,7 +53,7 @@
 | RF02, RF07 | UC01, UC02 | RN07 |
 | RF04, RF04.1 | UC07, UC09, UC12 | — |
 | RF05, RF06 | UC08, UC10, UC13, UC14 | RN07, RN09 |
-| RF08, RF13, RF15 | UC03, UC04, UC11, UC05 | RN01–RN06, RN11 |
+| RF08, RF13, RF13.1, RF15 | UC03, UC04, UC11, UC05 | RN01–RN06, RN11, RN12 |
 | RF09 | UC09 | RN10 |
 | RF10 | UC10 | RN09 |
 | RF11 | UC06 | RN08 |
@@ -67,6 +69,8 @@
 ### 1.1. Introdução
 
 A coordenação do Centro de Ciências Tecnológicas (CCT) gerencia diariamente a movimentação intensa de projetores multimídia e chaves de laboratórios e salas de aula. O fluxo envolve professores e equipe da secretaria (funcionários e estagiários, este último com perfil **Atendente** no sistema), exigindo registro de quem retirou o item e horário.
+
+A retirada física segue **apenas o fluxo de reserva**: o professor reserva o ativo pela plataforma (UC11), recebe um **código de confirmação** de 4 dígitos e apresenta esse código na secretaria para o atendente registrar o empréstimo (UC03). Não há empréstimo direto de ativo **Disponível** sem reserva prévia. Projetores podem sair com **acessórios** (controle, cabo HDMI, etc.); a inclusão de cada acessório é opcional na retirada, mas o que for emprestado deve ser devolvido.
 
 ### 1.2. Objetivo Geral
 
@@ -123,7 +127,8 @@ Criar uma aplicação de gestão patrimonial para o controle de empréstimos e d
 | **RF10** | Chave Reserva | Marcar/desmarcar chaves como reserva (`ehReserva`), vinculadas a sala e bloco. | Alta |
 | **RF11** | Relatório | Gerar relatório de movimentações por período, com exportação. | Alta |
 | **RF12** | Troca por Defeito | Registrar troca durante empréstimo ativo, com descrição obrigatória do defeito. | Alta |
-| **RF13** | Reserva de Ativo | Professor solicita reserva; status **Reservado** vinculado à matrícula. | Alta |
+| **RF13** | Reserva de Ativo | Professor solicita reserva (obrigatória antes da retirada); status **Reservado** vinculado à matrícula; geração de **código de confirmação** de 4 dígitos na movimentação. | Alta |
+| **RF13.1** | Acessórios de projetor | No empréstimo (UC03), atendente registra quais acessórios do projetor foram retirados; na devolução (UC04), confirma o retorno dos emprestados. | Alta |
 | **RF14** | Histórico e pendências | Professor consulta movimentações e bloqueios (UC12). | Alta |
 | **RF15** | Liberar manutenção | Atendente/admin altera ativo de **Em Manutenção** para **Disponível** (UC15). | Alta |
 | **RF16** | Expiração de reservas | Job automático aplica RN11 (UC17). | Média |
@@ -171,30 +176,36 @@ Criar uma aplicação de gestão patrimonial para o controle de empréstimos e d
 ### UC03 - Realizar Empréstimo de Ativo
 
 - **Ator:** Atendente.
-- **Descrição:** Registra a retirada física de um projetor ou chave. Pode confirmar uma **reserva** prévia (UC11) ou emprestar um ativo **Disponível**.
+- **Descrição:** Registra a retirada física de um projetor ou chave **somente** mediante **reserva** prévia do professor (UC11). O professor informa o **código de confirmação** de 4 dígitos gerado na reserva. Para projetor, o atendente registra quais **acessórios** (ex.: controle, cabo HDMI) foram emprestados — cada um é opcional na saída (RN12).
 - **Fluxo Principal:**
   1. O atendente autentica-se e identifica o professor pela matrícula.
-  2. O sistema lista ativos **Disponíveis** e **Reservados** para aquela matrícula.
-  3. O atendente seleciona o ativo (projetor ou chave).
-  4. O atendente confirma data e hora e registra a confirmação da operação (RN03).
-  5. O sistema valida disponibilidade, limites (RN01, RN02) e pendências (RN05).
-  6. O sistema encerra movimentação aberta (se reserva), cria movimentação tipo `EMPRESTIMO`, limpa `matriculaReservada` e altera status para **Emprestado**.
-- **Fluxo Alternativo — Reserva prévia:**
-  1. O atendente seleciona ativo **Reservado** cuja `matriculaReservada` coincide com a matrícula informada.
-  2. O sistema valida a vinculação e segue a partir do passo 4 do fluxo principal.
+  2. O sistema lista ativos **Reservados** para aquela matrícula (RN01).
+  3. O atendente seleciona a reserva e o professor informa o **código de confirmação** de 4 dígitos.
+  4. O sistema valida o código em relação à movimentação tipo `RESERVA` em aberto (RN12).
+  5. Se o ativo for **projetor**, o atendente marca os acessórios efetivamente retirados (controle, cabo HDMI, etc.).
+  6. O atendente confirma data e hora e registra a confirmação da operação (RN03).
+  7. O sistema valida limites (RN02) e pendências (RN05).
+  8. O sistema encerra a movimentação `RESERVA`, cria movimentação tipo `EMPRESTIMO` (com acessórios emprestados, se houver), limpa `matriculaReservada` e altera status para **Emprestado**.
+- **Fluxo Alternativo — Código inválido:**
+  1. O código informado não corresponde à reserva selecionada ou está incorreto.
+  2. O sistema bloqueia a operação e solicita nova tentativa.
 - **Fluxo Alternativo — Reserva de outro professor:**
   1. O atendente tenta emprestar ativo **Reservado** para matrícula diferente da reserva.
   2. O sistema bloqueia a operação e exibe mensagem de conflito.
+- **Fluxo Alternativo — Sem reserva ativa:**
+  1. O professor não possui reserva **Reservada** para o ativo desejado.
+  2. O sistema orienta o professor a solicitar reserva pela plataforma (UC11) antes da retirada.
 
 ### UC04 - Realizar Devolução de Ativo
 
 - **Ator:** Atendente (exclusivo — o professor não registra devolução no sistema).
-- **Descrição:** Permite registrar o retorno do item à secretaria.
+- **Descrição:** Permite registrar o retorno do item à secretaria. Não exige **código de confirmação**. Para projetor, o atendente confirma o retorno dos **acessórios** que constam no empréstimo (RN12).
 - **Fluxo Principal:**
   1. O atendente autentica-se e localiza o empréstimo ativo pelo item ou pela matrícula do professor.
   2. O atendente confirma o recebimento e verifica o estado do item.
-  3. O sistema registra o horário de devolução.
-  4. Se o item estiver íntegro, o sistema altera o status para **Disponível**.
+  3. Se o empréstimo incluir acessórios de projetor, o atendente confirma a devolução de cada um emprestado (RN12).
+  4. O sistema registra o horário de devolução.
+  5. Se o item estiver íntegro, o sistema altera o status para **Disponível**.
 - **Fluxo Alternativo — Item com defeito:**
   1. O atendente marca defeito e informa descrição resumida (RN06).
   2. O sistema finaliza a movimentação tipo `DEVOLUCAO`, altera status para **Em Manutenção** e registra a descrição no ativo.
@@ -230,7 +241,7 @@ Criar uma aplicação de gestão patrimonial para o controle de empréstimos e d
   3. O usuário consulta a situação dos ativos.
 
 - **Status possíveis:**
-  - **Disponível:** Item pronto para reserva ou empréstimo.
+  - **Disponível:** Item pronto para reserva (UC11); empréstimo direto sem reserva não é permitido.
   - **Reservado:** Item reservado por um professor (UC11), aguardando retirada na secretaria.
   - **Emprestado:** Item em uso, com identificação do professor responsável.
   - **Em Manutenção:** Item com defeito aguardando reparo.
@@ -273,13 +284,14 @@ Criar uma aplicação de gestão patrimonial para o controle de empréstimos e d
 ### UC11 - Solicitar Reserva de Ativo
 
 - **Ator:** Professor.
-- **Descrição:** Permite ao professor reservar antecipadamente um projetor ou chave disponível. A retirada física e o status **Emprestado** são registrados pelo atendente no UC03.
+- **Descrição:** Permite ao professor reservar antecipadamente um projetor ou chave disponível — **etapa obrigatória** antes da retirada na secretaria. A retirada física e o status **Emprestado** são registrados pelo atendente no UC03, mediante o **código de confirmação** gerado neste caso de uso.
 - **Fluxo Principal:**
   1. O professor autentica-se com matrícula e senha.
   2. O professor consulta ativos com status **Disponível**.
   3. O professor seleciona o ativo e confirma a reserva.
   4. O sistema valida limites (RN02) e pendências (RN05).
-  5. O sistema registra movimentação tipo `RESERVA`, define status **Reservado** e preenche `matriculaReservada` no ativo.
+  5. O sistema registra movimentação tipo `RESERVA`, gera **código de confirmação** de 4 dígitos vinculado à movimentação, define status **Reservado** e preenche `matriculaReservada` no ativo.
+  6. O sistema exibe o código ao professor (consulta também em UC12).
 - **Fluxo Alternativo — Cancelar reserva:**
   1. O professor cancela uma reserva própria ainda não convertida em empréstimo.
   2. O sistema finaliza a movimentação, limpa `matriculaReservada` e restaura status **Disponível**.
@@ -345,8 +357,8 @@ Casos de uso críticos para o funcionamento do sistema de controle patrimonial d
 
 | Caso de Uso | Justificativa |
 | :--- | :--- |
-| **UC11 - Solicitar Reserva de Ativo** | Antecipação de necessidade de uso e vinculação do ativo antes da retirada. |
-| **UC03 - Realizar Empréstimo de Ativo** | Confirma a retirada física (incluindo conversão de reserva em empréstimo). |
+| **UC11 - Solicitar Reserva de Ativo** | Único meio de solicitar retirada; gera código de confirmação e vincula o ativo ao professor. |
+| **UC03 - Realizar Empréstimo de Ativo** | Confirma a retirada física mediante reserva e código; registra acessórios opcionais do projetor. |
 | **UC04 - Realizar Devolução de Ativo** | Finaliza o ciclo patrimonial; exclusivo do atendente. |
 | **UC07 - Consultar Inventário e Status de Ativos** | Verificação de disponibilidade, reservas e empréstimos. |
 | **UC08 - Cadastrar Novo Ativo** | Registro de projetores e chaves para controle posterior. |
@@ -358,18 +370,19 @@ Casos de uso críticos para o funcionamento do sistema de controle patrimonial d
 
 - **Cenário básico:** O professor seleciona um ativo **Disponível** e confirma a reserva.
 - **Cenário alternativo:** Professor com pendência ou limite excedido — bloqueio (RN02, RN05).
-- **Resultado esperado:** O ativo fica **Reservado** para a matrícula do professor.
+- **Resultado esperado:** O ativo fica **Reservado** para a matrícula do professor e o sistema exibe o **código de confirmação** de 4 dígitos.
 
 #### UC03 - Realizar Empréstimo de Ativo
 
-- **Cenário básico:** O atendente identifica o professor, seleciona ativo **Disponível** ou **Reservado** por ele, e confirma o empréstimo.
-- **Cenário alternativo 1:** Pendência ou limite excedido — bloqueio (RN02, RN05).
-- **Cenário alternativo 2:** Nenhum ativo elegível — mensagem de indisponibilidade.
+- **Cenário básico:** O atendente identifica o professor, seleciona reserva **Reservada** dele, valida o código de 4 dígitos, registra acessórios do projetor (se aplicável) e confirma o empréstimo.
+- **Cenário alternativo 1:** Código inválido — bloqueio (RN12).
+- **Cenário alternativo 2:** Pendência ou limite excedido — bloqueio (RN02, RN05).
+- **Cenário alternativo 3:** Professor sem reserva ativa — orientação para UC11.
 - **Resultado esperado:** Status **Emprestado** e movimentação registrada.
 
 #### UC04 - Realizar Devolução de Ativo
 
-- **Cenário básico:** O atendente localiza o empréstimo ativo, confirma o recebimento e registra a devolução.
+- **Cenário básico:** O atendente localiza o empréstimo ativo, confirma o recebimento (e acessórios emprestados, se houver) e registra a devolução — sem código de confirmação.
 - **Cenário alternativo:** Item devolvido com defeito — status **Em Manutenção** (RN06).
 - **Resultado esperado:** **Disponível** ou **Em Manutenção**, conforme a situação.
 
@@ -397,11 +410,12 @@ Casos de uso críticos para o funcionamento do sistema de controle patrimonial d
 
 | ID | Regra | Descrição |
 | :--- | :--- | :--- |
-| **RN01** | **Disponibilidade de Ativo** | Empréstimo (UC03) só se o ativo estiver **Disponível** ou **Reservado** para a mesma matrícula. Reserva (UC11) só se **Disponível**. |
+| **RN01** | **Disponibilidade de Ativo** | Empréstimo (UC03) só se o ativo estiver **Reservado** para a mesma matrícula (reserva prévia obrigatória via UC11). Reserva (UC11) só se **Disponível**. |
+| **RN12** | **Reserva, código e acessórios** | Toda retirada exige reserva ativa (UC11). O empréstimo (UC03) exige **código de confirmação** de 4 dígitos válido para a movimentação `RESERVA`; a devolução (UC04) não exige código. Acessórios de projetor são opcionais na saída e obrigatórios na devolução quando emprestados. |
 | **RN02** | **Limite de Empréstimos** | Cada professor pode ter, no máximo, um projetor e uma chave simultaneamente (reservas ativas + empréstimos em aberto). |
 | **RN03** | **Identificação Obrigatória** | Todo empréstimo exige matrícula válida do professor e confirmação do atendente autenticado. |
 | **RN04** | **Tempo de Permanência** | Empréstimo devolvido até o fim do turno da saída: manhã 12h, tarde 18h, noite 23h. |
-| **RN05** | **Bloqueio de Pendência** | Professor com atraso ou reserva irregular não pode reservar nem emprestar até regularizar. |
+| **RN05** | **Bloqueio de Pendência** | Professor com atraso, acessório não devolvido ou reserva irregular não pode reservar até regularizar. |
 | **RN06** | **Registro de Defeito** | Troca (UC05) ou devolução com defeito (UC04) exige descrição obrigatória da falha. |
 | **RN07** | **Hierarquia de Cadastro** | Apenas **Administrador/Gestor** exclui ativos ou usuários; atendentes cadastram ou editam. |
 | **RN08** | **Integridade de Histórico** | Movimentações finalizadas não podem ser excluídas, apenas consultadas. |
@@ -457,7 +471,7 @@ Especialização de **Ativo**. Adiciona **sala**, **bloco** e **ehReserva** (cha
 
 #### 7.2.8. Classe Movimentacao
 
-Registra cada operação patrimonial. Atributos: **tipoOperacao**, **finalidadeAcademica**, **professorMatricula**, **idAtendenteRegistro** (nulo em reserva criada pelo professor), datas, **sala**, **status**. Métodos: **registrarReserva()**, **registrarSaida()**, **registrarRetorno()**, **calcularDuracao()**, **validarPrazo()** — RN04, RN08, RN11.
+Registra cada operação patrimonial. Atributos: **tipoOperacao**, **finalidadeAcademica**, **professorMatricula**, **idAtendenteRegistro** (nulo em reserva criada pelo professor), **codigoConfirmacao** (4 dígitos, preenchido em `RESERVA`), **acessoriosEmprestados** (controle, cabo HDMI, etc., preenchido no `EMPRESTIMO` de projetor), datas, **sala**, **status**. Métodos: **registrarReserva()**, **registrarSaida()**, **registrarRetorno()**, **calcularDuracao()**, **validarPrazo()**, **validarCodigoConfirmacao()** — RN04, RN08, RN11, RN12.
 
 ### 7.3. Resumo de Atributos e Métodos
 
@@ -470,7 +484,7 @@ Registra cada operação patrimonial. Atributos: **tipoOperacao**, **finalidadeA
 | **Ativo** | patrimonio, status, descricaoDefeito, matriculaReservada | alterarStatus(), registrarDefeito(), verificarDisponibilidade() |
 | **Projetor** | marca, modelo, numeroSerie | obterEspecificacoes() |
 | **Chave** | sala, bloco, ehReserva | obterLocalizacao() |
-| **Movimentacao** | id, tipoOperacao, finalidadeAcademica, professorMatricula, idAtendenteRegistro, dataHoraSaida, dataHoraDevolucao, sala, status | registrarReserva(), registrarSaida(), registrarRetorno(), calcularDuracao(), validarPrazo() |
+| **Movimentacao** | id, tipoOperacao, finalidadeAcademica, professorMatricula, idAtendenteRegistro, codigoConfirmacao, acessoriosEmprestados, dataHoraSaida, dataHoraDevolucao, sala, status | registrarReserva(), registrarSaida(), registrarRetorno(), calcularDuracao(), validarPrazo(), validarCodigoConfirmacao() |
 
 ### 7.4. Relacionamentos do Modelo
 
@@ -554,6 +568,8 @@ classDiagram
         +String finalidadeAcademica
         +String professorMatricula
         +String idAtendenteRegistro
+        +String codigoConfirmacao
+        +List acessoriosEmprestados
         +Date dataHoraSaida
         +Date dataHoraDevolucao
         +String sala
@@ -563,6 +579,7 @@ classDiagram
         +registrarRetorno()
         +calcularDuracao()
         +validarPrazo()
+        +validarCodigoConfirmacao()
     }
 
     Usuario <|-- Atendente
@@ -579,7 +596,7 @@ classDiagram
 
 Algumas regras de negócio impactam diretamente o comportamento das classes do modelo:
 
-- **RN01**, **RN02** e **RN11** são validadas em **verificarDisponibilidade()** (**Ativo**), **registrarReserva()** / **validarPrazo()** (**Movimentacao**) e **registrarEmprestimo()** (**Atendente**).
+- **RN01**, **RN02**, **RN11** e **RN12** são validadas em **verificarDisponibilidade()** (**Ativo**), **registrarReserva()** / **validarPrazo()** / **validarCodigoConfirmacao()** (**Movimentacao**) e **registrarEmprestimo()** (**Atendente**).
 - **RN04** é tratada por **validarPrazo()** em **Movimentacao**.
 - **RN05** é verificada por **verificarPendencias()** em **Professor**.
 - **RN06** é tratada por **registrarDefeito()** (**Ativo**), **trocarAtivoDefeito()** (**Atendente**) e devolução com defeito (UC04).
@@ -712,7 +729,7 @@ A **versão canônica** do diagrama de casos de uso está na seção **8.3 (Merm
 #### 8.4.2. Troca, reserva e manutenção
 
 - **UC05:** durante **empréstimo em curso**; encerra movimentação do item defeituoso e abre empréstimo do substituto (RN06, RF12).
-- **UC11 → UC03:** reserva opcional; conversão **Reservado** → **Emprestado** na secretaria.
+- **UC11 → UC03:** reserva **obrigatória**; conversão **Reservado** → **Emprestado** na secretaria com **código de confirmação** (RN12).
 - **UC15:** único fluxo que retira ativo de **Em Manutenção** (RF16).
 - **UC17:** job do **Sistema**; sem interação humana (RN11, RF17).
 
@@ -722,7 +739,7 @@ A **versão canônica** do diagrama de casos de uso está na seção **8.3 (Merm
 | :--- | :--- | :--- |
 | **UC01** | Cadastrar novo usuário | Cria atendente/gestor com senha inicial e `role`. |
 | **UC02** | Cadastrar novo professor | Registra professor com `role = PROFESSOR`. |
-| **UC03** | Realizar empréstimo de ativo | Retirada física; Disponível ou Reservado (mesma matrícula). |
+| **UC03** | Realizar empréstimo de ativo | Retirada física apenas de **Reservado** (mesma matrícula), com código de 4 dígitos e acessórios opcionais do projetor. |
 | **UC04** | Realizar devolução de ativo | Devolução pelo atendente; íntegro ou com defeito. |
 | **UC05** | Troca de ativo por defeito | Substituição com descrição do defeito. |
 | **UC06** | Gerar relatório de movimentações | Filtro por período e exportação. |
@@ -730,7 +747,7 @@ A **versão canônica** do diagrama de casos de uso está na seção **8.3 (Merm
 | **UC08** | Cadastrar novo ativo | Inclusão de projetor ou chave. |
 | **UC09** | Pesquisar itens | Busca com filtros combinados. |
 | **UC10** | Gerenciar chave reserva | Flag `ehReserva` em chaves. |
-| **UC11** | Solicitar reserva de ativo | Professor reserva |
+| **UC11** | Solicitar reserva de ativo | Professor reserva (obrigatório antes da retirada); gera código de 4 dígitos. |
 | **UC12** | Consultar histórico e pendências | Movimentações e bloqueios do professor. |
 | **UC13** | Editar cadastro de ativo | Atualização de dados do inventário. |
 | **UC14** | Excluir ativo | Exclusão restrita ao administrador. |
@@ -760,13 +777,13 @@ sequenceDiagram
     DB-->>API: Dados do professor
     API-->>Atendente: Professor encontrado
 
-    Atendente->>API: GET /ativos?status=Disponivel,Reservado&matricula={matricula}
-    API->>DB: Consulta ativos elegíveis
-    DB-->>API: Lista de ativos
-    API-->>Atendente: Ativos disponíveis e reservados do professor
+    Atendente->>API: GET /ativos?status=Reservado&matricula={matricula}
+    API->>DB: Consulta reservas do professor
+    DB-->>API: Lista de ativos reservados
+    API-->>Atendente: Reservas ativas do professor
 
-    Atendente->>API: POST /movimentacoes/emprestimo (finalidade, sala)
-    API->>API: Valida RN01, RN02, RN03, RN05, RF15
+    Atendente->>API: POST /movimentacoes/emprestimo (idReserva, codigoConfirmacao, acessorios, sala)
+    API->>API: Valida RN01, RN02, RN03, RN05, RN12, RF13.1, RF15
     API->>DB: Finaliza RESERVA aberta se houver
     API->>DB: Cria movimentação EMPRESTIMO + idAtendenteRegistro
     API->>DB: Status Emprestado, limpa matriculaReservada
@@ -794,9 +811,9 @@ sequenceDiagram
     alt Validação falha
         API-->>Professor: Erro (pendência ou limite excedido)
     else Validação ok
-        API->>DB: Movimentação RESERVA (idAtendenteRegistro nulo)
+        API->>DB: Movimentação RESERVA + codigoConfirmacao (4 dígitos)
         API->>DB: Status Reservado + matriculaReservada
-        API-->>Professor: Reserva confirmada
+        API-->>Professor: Reserva confirmada + código de confirmação
     end
 
     opt Cancelar reserva
@@ -821,11 +838,12 @@ sequenceDiagram
     API-->>Atendente: Exibe empréstimo
 
     alt Item íntegro
-        Atendente->>API: POST /movimentacoes/devolucao
+        Atendente->>API: POST /movimentacoes/devolucao (acessoriosDevolvidos se houver)
+        API->>API: Valida RN12 (acessórios emprestados devolvidos)
         API->>DB: Finaliza EMPRESTIMO (DEVOLUCAO)
         API->>DB: Status Disponivel
     else Item com defeito (RN06)
-        Atendente->>API: POST /movimentacoes/devolucao (descricaoDefeito)
+        Atendente->>API: POST /movimentacoes/devolucao (descricaoDefeito, acessoriosDevolvidos)
         API->>DB: Finaliza EMPRESTIMO + descricao no ativo
         API->>DB: Status Em Manutencao
     end
@@ -891,14 +909,17 @@ sequenceDiagram
 ### 10.5. Tela de Empréstimo (Atendente)
 
 - Campo para matrícula do professor.
-- Lista de ativos **Disponíveis** e **Reservados** para a matrícula informada.
+- Lista de reservas (**Reservado**) da matrícula informada.
+- Campo **código de confirmação** (4 dígitos) — obrigatório (RN12).
+- Para projetor: checkboxes de acessórios (controle, cabo HDMI, etc.) — opcionais na saída (RF13.1).
 - Campo sala de uso (RF15).
-- Seleção do item e botão confirmar empréstimo.
+- Seleção da reserva e botão confirmar empréstimo.
 
 ### 10.6. Tela de Devolução
 
 - Campo de busca por matrícula ou item.
-- Exibição do empréstimo ativo.
+- Exibição do empréstimo ativo e acessórios emprestados (se houver).
+- Confirmação de devolução de cada acessório emprestado (RN12).
 - Campo para observações.
 - Opção de marcar defeito.
 - Botão de confirmar devolução.
@@ -914,7 +935,8 @@ sequenceDiagram
 
 - Lista de ativos **Disponíveis**.
 - Campo confirmação de reserva.
-- Lista de reservas ativas com prazo (RN11) e botão cancelar.
+- Exibição do **código de confirmação** (4 dígitos) após reserva bem-sucedida.
+- Lista de reservas ativas com código, prazo (RN11) e botão cancelar.
 
 ### 10.9. Tela de Troca por Defeito (Atendente)
 
